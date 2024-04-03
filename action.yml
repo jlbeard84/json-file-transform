@@ -1,0 +1,12 @@
+name: 'JSON File Transform'
+description: 'Modify fields in a JSON file'
+inputs:
+  files:
+    description: 'The JSON file(s) to modify'
+    required: true
+  key-value-pairs:
+    description: 'The key-value pairs to modify'
+    required: true
+runs:
+  using: 'node20'
+  main: 'index.js'

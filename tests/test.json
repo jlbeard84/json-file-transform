@@ -1,0 +1,13 @@
+{
+    "key1": "value1",
+    "key2": "value2",
+    "array": [
+        "arrayValue1",
+        "arrayValue2",
+        "arrayValue3"
+    ],
+    "object": {
+        "objectKey1": "objectValue1",
+        "objectKey2": "objectValue2"
+    }
+}
