@@ -116,7 +116,9 @@ const parseReplacements = (replacements: string) => {
   const lines = replacements.split('\n')
   const replacementsObj: Record<string, string> = {}
   for (const line of lines) {
-    const [key, value] = line.trim().split('=')
+    const sections = line.trim().split('=')
+    const key = sections[0]
+    const value = sections.slice(1).join('=')
     if (!key) {
       continue
     }

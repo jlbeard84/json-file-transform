@@ -39,6 +39,16 @@ describe('Replacement parsing', () => {
       key3: 'value3',
     })
   })
+
+  test('Replacements with multiple equal signs are parsed correctly', () => {
+    const replacements = 'key1=value1=value2\nkey2=value2=value3\nkey3=value3'
+    const parsedReplacements = parseReplacements(replacements)
+    expect(parsedReplacements).toEqual({
+      key1: 'value1=value2',
+      key2: 'value2=value3',
+      key3: 'value3',
+    })
+  })
 })
 
 describe('JSON object transformation', () => {
