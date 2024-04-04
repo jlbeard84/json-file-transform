@@ -1,18 +1,18 @@
-import fs from 'fs'
+const fs = require('fs')
 
 /**
  * Splits a key string into an array of key parts, separated by dots. Escaped dots are treated as part of the key.
  * @param key Key to split
  * @returns Array of key parts
  */
-const splitKey = (key: string) => key.match(/(\\.|[^.])+/g) || []
+const splitKey = (key) => key.match(/(\\.|[^.])+/g) || []
 
 /**
  * Removes the first element of a key string
  * @param key Key to modify
  * @returns Modified key
  */
-const getNextStepKey = (key: string) => splitKey(key).slice(1).join('.')
+const getNextStepKey = (key) => splitKey(key).slice(1).join('.')
 
 /**
  * Replaces a value in an object based on a string key
@@ -21,8 +21,7 @@ const getNextStepKey = (key: string) => splitKey(key).slice(1).join('.')
  * @param value New value
  * @returns True if the value was replaced, false otherwise
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const replaceValue = (obj: any, key: string, value: any): boolean => {
+const replaceValue = (obj, key, value) => {
   const currentKey = splitKey(key)[0]?.replace(/\\./g, '.') || ''
   const nextKey = getNextStepKey(key)
   const isLastKey = nextKey === ''
@@ -65,7 +64,7 @@ const replaceValue = (obj: any, key: string, value: any): boolean => {
  * @param value String representation of the value
  * @returns The parsed value or the original value if it could not be parsed as a boolean, number or null
  */
-const parseValue = (value?: string | null) => {
+const parseValue = (value) => {
   if (!value) {
     return null
   } else if (value === 'true') {
@@ -86,8 +85,7 @@ const parseValue = (value?: string | null) => {
  * @param value The value to replace the key with
  * @returns True if the value was replaced, false otherwise
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const replaceObjectValue = (obj: any, key: string, value: any) => {
+const replaceObjectValue = (obj, key, value) => {
   const parsedValue = parseValue(value)
   return replaceValue(obj, key, parsedValue)
 }
@@ -98,9 +96,8 @@ const replaceObjectValue = (obj: any, key: string, value: any) => {
  * @param replacements Object containing the keys to replace and their new values
  * @returns Array of keys that were replaced
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const transformObject = (obj: any, replacements: Record<string, string>) => {
-  const replacedKeys: string[] = []
+const transformObject = (obj, replacements) => {
+  const replacedKeys = []
   for (const key in replacements) {
     const replaced = replaceObjectValue(obj, key, replacements[key])
     if (replaced) {
@@ -115,9 +112,9 @@ const transformObject = (obj: any, replacements: Record<string, string>) => {
  * @param replacements Replacements string in the format key=value, separated by newlines
  * @returns Object containing the keys to replace and their new values
  */
-const parseReplacements = (replacements: string) => {
+const parseReplacements = (replacements) => {
   const lines = replacements.split('\n')
-  const replacementsObj: Record<string, string> = {}
+  const replacementsObj = {}
   for (const line of lines) {
     const sections = line.trim().split('=')
     const key = sections[0]
@@ -137,7 +134,7 @@ const parseReplacements = (replacements: string) => {
  * @param replacements Object containing the keys to replace and their new values
  * @returns Array of keys that were replaced successfully
  */
-const transformJsonFile = (inputFilePath: string, outputFilePath: string, replacements: Record<string, string>) => {
+const transformJsonFile = (inputFilePath, outputFilePath, replacements) => {
   const fileContent = fs.readFileSync(inputFilePath, 'utf8')
   const obj = JSON.parse(fileContent)
   const replacedKeys = transformObject(obj, replacements)
@@ -145,4 +142,4 @@ const transformJsonFile = (inputFilePath: string, outputFilePath: string, replac
   return replacedKeys
 }
 
-export { parseReplacements, transformJsonFile, transformObject }
+module.exports = { parseReplacements, transformJsonFile, transformObject }

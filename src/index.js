@@ -2,7 +2,7 @@ import core from '@actions/core'
 import glob from '@actions/glob'
 import { parseReplacements, transformJsonFile } from './tokenReplacement'
 
-const transformFile = async (file: string, replacements: Record<string, string>) => {
+const transformFile = async (file, replacements) => {
   core.info(`Transforming file: ${file}`)
   const transformedKeys = transformJsonFile(file, file, replacements)
   if (transformedKeys.length > 0) {
@@ -23,7 +23,7 @@ const action = async () => {
       transformFile(file, replacements)
     } catch (error) {
       core.error(`Error transforming file: ${file}`)
-      core.error(error as Error)
+      core.error(error)
       throw error
     }
   }

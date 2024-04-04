@@ -27360,75 +27360,25 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 6144:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ 1655:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
+const fs = __nccwpck_require__(7147)
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(2186));
-const glob_1 = __importDefault(__nccwpck_require__(8090));
-const tokenReplacement_1 = __nccwpck_require__(5625);
-const transformFile = async (file, replacements) => {
-    core_1.default.info(`Transforming file: ${file}`);
-    const transformedKeys = (0, tokenReplacement_1.transformJsonFile)(file, file, replacements);
-    if (transformedKeys.length > 0) {
-        core_1.default.info(transformedKeys.map((key) => `\tReplaced key: ${key}`).join('\n'));
-        core_1.default.info(`${transformedKeys.length} key(s) replaced in file: ${file}`);
-    }
-    else {
-        core_1.default.warning(`No keys replaced in file: ${file}`);
-    }
-};
-const action = async () => {
-    const replacementsString = core_1.default.getInput('replacements');
-    const replacements = (0, tokenReplacement_1.parseReplacements)(replacementsString);
-    const pattern = core_1.default.getInput('files');
-    const globber = await glob_1.default.create(pattern);
-    for await (const file of globber.globGenerator()) {
-        try {
-            transformFile(file, replacements);
-        }
-        catch (error) {
-            core_1.default.error(`Error transforming file: ${file}`);
-            core_1.default.error(error);
-            throw error;
-        }
-    }
-};
-action()
-    .then(() => core_1.default.info('Token replacement completed successfully'))
-    .catch((error) => core_1.default.setFailed(error));
-
-
-/***/ }),
-
-/***/ 5625:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.transformObject = exports.transformJsonFile = exports.parseReplacements = void 0;
-const fs_1 = __importDefault(__nccwpck_require__(7147));
 /**
  * Splits a key string into an array of key parts, separated by dots. Escaped dots are treated as part of the key.
  * @param key Key to split
  * @returns Array of key parts
  */
-const splitKey = (key) => key.match(/(\\.|[^.])+/g) || [];
+const splitKey = (key) => key.match(/(\\.|[^.])+/g) || []
+
 /**
  * Removes the first element of a key string
  * @param key Key to modify
  * @returns Modified key
  */
-const getNextStepKey = (key) => splitKey(key).slice(1).join('.');
+const getNextStepKey = (key) => splitKey(key).slice(1).join('.')
+
 /**
  * Replaces a value in an object based on a string key
  * @param obj Object to replace the value in
@@ -27436,66 +27386,63 @@ const getNextStepKey = (key) => splitKey(key).slice(1).join('.');
  * @param value New value
  * @returns True if the value was replaced, false otherwise
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const replaceValue = (obj, key, value) => {
-    const currentKey = splitKey(key)[0]?.replace(/\\./g, '.') || '';
-    const nextKey = getNextStepKey(key);
-    const isLastKey = nextKey === '';
-    if (!currentKey) {
-        return false;
+  const currentKey = splitKey(key)[0]?.replace(/\\./g, '.') || ''
+  const nextKey = getNextStepKey(key)
+  const isLastKey = nextKey === ''
+  if (!currentKey) {
+    return false
+  }
+  // If the current key doesn't exist in the object, return false
+  if (typeof obj[currentKey] === 'undefined') {
+    return false
+  }
+
+  // Recurse into the object or array
+  if (Array.isArray(obj)) {
+    // If the object is an array, try to use the key as an array index
+    const index = Number(currentKey)
+    if (!isNaN(index)) {
+      if (isLastKey) {
+        obj[index] = value
+        return true
+      } else {
+        return replaceValue(obj[index], nextKey, value)
+      }
     }
-    // If the current key doesn't exist in the object, return false
-    if (typeof obj[currentKey] === 'undefined') {
-        return false;
-    }
-    // Recurse into the object or array
-    if (Array.isArray(obj)) {
-        // If the object is an array, try to use the key as an array index
-        const index = Number(currentKey);
-        if (!isNaN(index)) {
-            if (isLastKey) {
-                obj[index] = value;
-                return true;
-            }
-            else {
-                return replaceValue(obj[index], nextKey, value);
-            }
-        }
-    }
-    else if (typeof obj[currentKey] === 'object' && obj[currentKey] !== null && !isLastKey) {
-        // If the current key points to an object, recursively search for the next key
-        return replaceValue(obj[currentKey], nextKey, value);
-    }
-    if ((typeof obj[currentKey] !== 'object' || obj[currentKey] === null) && !Array.isArray(obj)) {
-        // If the current key points to a value that isn't an object or array, replace it
-        // If the current value is a string, also convert the new value to a string to avoid type mismatch
-        obj[currentKey] = typeof obj[currentKey] === 'string' ? String(value) : value;
-        return true;
-    }
-    return false;
-};
+  } else if (typeof obj[currentKey] === 'object' && obj[currentKey] !== null && !isLastKey) {
+    // If the current key points to an object, recursively search for the next key
+    return replaceValue(obj[currentKey], nextKey, value)
+  }
+
+  if ((typeof obj[currentKey] !== 'object' || obj[currentKey] === null) && !Array.isArray(obj)) {
+    // If the current key points to a value that isn't an object or array, replace it
+    // If the current value is a string, also convert the new value to a string to avoid type mismatch
+    obj[currentKey] = typeof obj[currentKey] === 'string' ? String(value) : value
+    return true
+  }
+  return false
+}
+
 /**
  * Parses the given value as a valid JSON data type
  * @param value String representation of the value
  * @returns The parsed value or the original value if it could not be parsed as a boolean, number or null
  */
 const parseValue = (value) => {
-    if (!value) {
-        return null;
-    }
-    else if (value === 'true') {
-        return true;
-    }
-    else if (value === 'false') {
-        return false;
-    }
-    else if (!isNaN(Number(value))) {
-        return Number(value);
-    }
-    else {
-        return value;
-    }
-};
+  if (!value) {
+    return null
+  } else if (value === 'true') {
+    return true
+  } else if (value === 'false') {
+    return false
+  } else if (!isNaN(Number(value))) {
+    return Number(value)
+  } else {
+    return value
+  }
+}
+
 /**
  * Replaces the value of the given key in the given JSON object
  * @param obj The JSON object
@@ -27503,49 +27450,48 @@ const parseValue = (value) => {
  * @param value The value to replace the key with
  * @returns True if the value was replaced, false otherwise
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const replaceObjectValue = (obj, key, value) => {
-    const parsedValue = parseValue(value);
-    return replaceValue(obj, key, parsedValue);
-};
+  const parsedValue = parseValue(value)
+  return replaceValue(obj, key, parsedValue)
+}
+
 /**
  * Replaces the values in the given object with the values in the given replacements object
  * @param obj Object to replace the values in
  * @param replacements Object containing the keys to replace and their new values
  * @returns Array of keys that were replaced
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transformObject = (obj, replacements) => {
-    const replacedKeys = [];
-    for (const key in replacements) {
-        const replaced = replaceObjectValue(obj, key, replacements[key]);
-        if (replaced) {
-            replacedKeys.push(key);
-        }
+  const replacedKeys = []
+  for (const key in replacements) {
+    const replaced = replaceObjectValue(obj, key, replacements[key])
+    if (replaced) {
+      replacedKeys.push(key)
     }
-    return replacedKeys;
-};
-exports.transformObject = transformObject;
+  }
+  return replacedKeys
+}
+
 /**
  * Parses the given replacements string into an object
  * @param replacements Replacements string in the format key=value, separated by newlines
  * @returns Object containing the keys to replace and their new values
  */
 const parseReplacements = (replacements) => {
-    const lines = replacements.split('\n');
-    const replacementsObj = {};
-    for (const line of lines) {
-        const sections = line.trim().split('=');
-        const key = sections[0];
-        const value = sections.slice(1).join('=');
-        if (!key) {
-            continue;
-        }
-        replacementsObj[key.trim()] = value?.trim() || '';
+  const lines = replacements.split('\n')
+  const replacementsObj = {}
+  for (const line of lines) {
+    const sections = line.trim().split('=')
+    const key = sections[0]
+    const value = sections.slice(1).join('=')
+    if (!key) {
+      continue
     }
-    return replacementsObj;
-};
-exports.parseReplacements = parseReplacements;
+    replacementsObj[key.trim()] = value?.trim() || ''
+  }
+  return replacementsObj
+}
+
 /**
  * Replaces the values in the given JSON file with the values in the given replacements object and writes the result to the output file
  * @param inputFilePath Path to the input file
@@ -27554,13 +27500,14 @@ exports.parseReplacements = parseReplacements;
  * @returns Array of keys that were replaced successfully
  */
 const transformJsonFile = (inputFilePath, outputFilePath, replacements) => {
-    const fileContent = fs_1.default.readFileSync(inputFilePath, 'utf8');
-    const obj = JSON.parse(fileContent);
-    const replacedKeys = transformObject(obj, replacements);
-    fs_1.default.writeFileSync(outputFilePath, JSON.stringify(obj, null, 2));
-    return replacedKeys;
-};
-exports.transformJsonFile = transformJsonFile;
+  const fileContent = fs.readFileSync(inputFilePath, 'utf8')
+  const obj = JSON.parse(fileContent)
+  const replacedKeys = transformObject(obj, replacements)
+  fs.writeFileSync(outputFilePath, JSON.stringify(obj, null, 2))
+  return replacedKeys
+}
+
+module.exports = { parseReplacements, transformJsonFile, transformObject }
 
 
 /***/ }),
@@ -29447,17 +29394,99 @@ module.exports = parseParams
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(6144);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(8090);
+/* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_glob__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _tokenReplacement__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(1655);
+/* harmony import */ var _tokenReplacement__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+
+const transformFile = async (file, replacements) => {
+  _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(`Transforming file: ${file}`)
+  const transformedKeys = (0,_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__.transformJsonFile)(file, file, replacements)
+  if (transformedKeys.length > 0) {
+    _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(transformedKeys.map((key) => `\tReplaced key: ${key}`).join('\n'))
+    _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(`${transformedKeys.length} key(s) replaced in file: ${file}`)
+  } else {
+    _actions_core__WEBPACK_IMPORTED_MODULE_0___default().warning(`No keys replaced in file: ${file}`)
+  }
+}
+
+const action = async () => {
+  const replacementsString = _actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('replacements')
+  const replacements = (0,_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__.parseReplacements)(replacementsString)
+  const pattern = _actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('files')
+  const globber = await _actions_glob__WEBPACK_IMPORTED_MODULE_1___default().create(pattern)
+  for await (const file of globber.globGenerator()) {
+    try {
+      transformFile(file, replacements)
+    } catch (error) {
+      _actions_core__WEBPACK_IMPORTED_MODULE_0___default().error(`Error transforming file: ${file}`)
+      _actions_core__WEBPACK_IMPORTED_MODULE_0___default().error(error)
+      throw error
+    }
+  }
+}
+
+action()
+  .then(() => _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info('Token replacement completed successfully'))
+  .catch((error) => _actions_core__WEBPACK_IMPORTED_MODULE_0___default().setFailed(error))
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
