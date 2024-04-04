@@ -1,5 +1,8 @@
 name: 'JSON File Transform'
 description: 'Modify fields in a JSON file'
+branding:
+  icon: 'edit'
+  color: 'green'
 inputs:
   files:
     description: 'The JSON file(s) to modify'
