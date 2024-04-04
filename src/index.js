@@ -14,7 +14,7 @@ const transformFile = (file, replacements) => {
 }
 
 const action = async () => {
-  const replacementsString = core.getInput('replacements')
+  const replacementsString = core.getInput('key-value-pairs')
   core.debug(`Replacement string: ${replacementsString}`)
   const replacements = parseReplacements(replacementsString)
   const pattern = core.getInput('files')
