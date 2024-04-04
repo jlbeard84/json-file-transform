@@ -20,13 +20,15 @@ Whether to follow symbolic links when searching for files. Default is `true`.
 
 **Important**: This action will overwrite the files in place. Fields are only replaced, not added, so make sure the JSON file already contains the fields you want to replace.
 
+Assuming a secret `DB_CONNECTION_STRING` exists, the following example shows how to replace values in a JSON file:
+
 ```yaml
 - name: Replace values in JSON file
   uses: tnikFi/json-file-transform@v1
   with:
     files: '**/appsettings.json'
     key-value-pairs: |
-      ConnectionStrings.DefaultConnection=Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
+      ConnectionStrings.DefaultConnection=${{ secrets.DB_CONNECTION_STRING }}
       Logging.LogLevel.Default=Information
       AllowedHosts=localhost
 ```
