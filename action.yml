@@ -7,6 +7,10 @@ inputs:
   files:
     description: 'The JSON file(s) to modify'
     required: true
+  follow-symbolic-links:
+    description: 'Whether to follow symbolic links when resolving files'
+    required: false
+    default: true
   key-value-pairs:
     description: 'The key-value pairs to modify'
     required: true

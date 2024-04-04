@@ -1,5 +1,5 @@
 import core from '@actions/core'
-import { glob } from 'glob'
+import glob from '@actions/glob'
 import { parseReplacements, transformJsonFile } from './tokenReplacement'
 
 const transformFile = async (file: string, replacements: Record<string, string>) => {
@@ -17,8 +17,8 @@ const action = async () => {
   const replacementsString = core.getInput('replacements')
   const replacements = parseReplacements(replacementsString)
   const pattern = core.getInput('files')
-  const files = await glob(pattern)
-  for (const file of files) {
+  const globber = await glob.create(pattern)
+  for await (const file of globber.globGenerator()) {
     try {
       transformFile(file, replacements)
     } catch (error) {
