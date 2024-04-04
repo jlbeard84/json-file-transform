@@ -29454,7 +29454,7 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 
-const transformFile = async (file, replacements) => {
+const transformFile = (file, replacements) => {
   _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(`Transforming file: ${file}`)
   const transformedKeys = (0,_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__.transformJsonFile)(file, file, replacements)
   if (transformedKeys.length > 0) {
