@@ -31,4 +31,4 @@ const action = async () => {
 
 action()
   .then(() => core.info('Token replacement completed successfully'))
-  .catch((error) => core.setFailed(error.message))
+  .catch((error) => core.setFailed(error))

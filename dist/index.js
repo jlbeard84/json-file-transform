@@ -27401,7 +27401,7 @@ const action = async () => {
 };
 action()
     .then(() => core_1.default.info('Token replacement completed successfully'))
-    .catch((error) => core_1.default.setFailed(error.message));
+    .catch((error) => core_1.default.setFailed(error));
 
 
 /***/ }),
