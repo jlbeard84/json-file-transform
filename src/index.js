@@ -1,6 +1,6 @@
-import core from '@actions/core'
-import glob from '@actions/glob'
-import { parseReplacements, transformJsonFile } from './tokenReplacement'
+const core = require('@actions/core')
+const glob = require('@actions/glob')
+const { parseReplacements, transformJsonFile } = require('./tokenReplacement')
 
 const transformFile = (file, replacements) => {
   core.info(`Transforming file: ${file}`)

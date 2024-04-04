@@ -29394,96 +29394,48 @@ module.exports = parseParams
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(8090);
-/* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_glob__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _tokenReplacement__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(1655);
-/* harmony import */ var _tokenReplacement__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__);
-
-
-
+const core = __nccwpck_require__(2186)
+const glob = __nccwpck_require__(8090)
+const { parseReplacements, transformJsonFile } = __nccwpck_require__(1655)
 
 const transformFile = (file, replacements) => {
-  _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(`Transforming file: ${file}`)
-  const transformedKeys = (0,_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__.transformJsonFile)(file, file, replacements)
+  core.info(`Transforming file: ${file}`)
+  const transformedKeys = transformJsonFile(file, file, replacements)
   if (transformedKeys.length > 0) {
-    _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(transformedKeys.map((key) => `\tReplaced key: ${key}`).join('\n'))
-    _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info(`${transformedKeys.length} key(s) replaced in file: ${file}`)
+    core.info(transformedKeys.map((key) => `\tReplaced key: ${key}`).join('\n'))
+    core.info(`${transformedKeys.length} key(s) replaced in file: ${file}`)
   } else {
-    _actions_core__WEBPACK_IMPORTED_MODULE_0___default().warning(`No keys replaced in file: ${file}`)
+    core.warning(`No keys replaced in file: ${file}`)
   }
 }
 
 const action = async () => {
-  const replacementsString = _actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('replacements')
-  const replacements = (0,_tokenReplacement__WEBPACK_IMPORTED_MODULE_2__.parseReplacements)(replacementsString)
-  const pattern = _actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('files')
-  const globber = await _actions_glob__WEBPACK_IMPORTED_MODULE_1___default().create(pattern)
+  const replacementsString = core.getInput('replacements')
+  const replacements = parseReplacements(replacementsString)
+  const pattern = core.getInput('files')
+  const globber = await glob.create(pattern)
   for await (const file of globber.globGenerator()) {
     try {
       transformFile(file, replacements)
     } catch (error) {
-      _actions_core__WEBPACK_IMPORTED_MODULE_0___default().error(`Error transforming file: ${file}`)
-      _actions_core__WEBPACK_IMPORTED_MODULE_0___default().error(error)
+      core.error(`Error transforming file: ${file}`)
+      core.error(error)
       throw error
     }
   }
 }
 
 action()
-  .then(() => _actions_core__WEBPACK_IMPORTED_MODULE_0___default().info('Token replacement completed successfully'))
-  .catch((error) => _actions_core__WEBPACK_IMPORTED_MODULE_0___default().setFailed(error))
+  .then(() => core.info('Token replacement completed successfully'))
+  .catch((error) => core.setFailed(error))
 
 })();
 
