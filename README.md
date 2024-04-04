@@ -4,7 +4,7 @@ GitHub Action to easily replace values in a JSON file.
 
 ## Inputs
 
-### `file`
+### `files`
 
 **Required**. File search pattern to determine which files to transform.
 
@@ -20,17 +20,25 @@ List of key-value pairs to replace in the JSON file. The key-value pairs should 
 - name: Replace values in JSON file
   uses: tnikFi/json-file-transform@v1
   with:
-    file: '**/config.json'
+    file: '**/appsettings.json'
     key-value-pairs: |
       ConnectionStrings.DefaultConnection=Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
+      Logging.LogLevel.Default=Information
+      AllowedHosts=localhost
 ```
 
-This will replace the values in the JSON file `config.json` with the values specified in the `key-value-pairs` input. The replaced values will be written back to the file. The JSON file should be in the following format:
+This will replace the values in the JSON file `appsettings.json` with the values specified in the `key-value-pairs` input. The replaced values will be written back to the file. The following fields will be updated in the JSON file:
 
 ```json
 {
+  "AllowedHosts": "localhost",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;"
+    "DefaultConnection": "Server=myServerAddress;Database=myDataBase;User Id=myUsername;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
   }
 }
 ```
