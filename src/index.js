@@ -15,8 +15,10 @@ const transformFile = (file, replacements) => {
 
 const action = async () => {
   const replacementsString = core.getInput('replacements')
+  core.debug(`Replacement string: ${replacementsString}`)
   const replacements = parseReplacements(replacementsString)
   const pattern = core.getInput('files')
+  core.debug(`Files pattern: ${pattern}`)
   const globber = await glob.create(pattern)
   for await (const file of globber.globGenerator()) {
     try {
