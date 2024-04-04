@@ -5,7 +5,7 @@ import fs from 'fs'
  * @param key Key to split
  * @returns Array of key parts
  */
-const splitKey = (key: string) => key.match(/(\\.|[^\.])+/g) || []
+const splitKey = (key: string) => key.match(/(\\.|[^.])+/g) || []
 
 /**
  * Removes the first element of a key string
@@ -21,6 +21,7 @@ const getNextStepKey = (key: string) => splitKey(key).slice(1).join('.')
  * @param value New value
  * @returns True if the value was replaced, false otherwise
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const replaceValue = (obj: any, key: string, value: any): boolean => {
   const currentKey = splitKey(key)[0]?.replace(/\\./g, '.') || ''
   const nextKey = getNextStepKey(key)
@@ -85,6 +86,7 @@ const parseValue = (value?: string | null) => {
  * @param value The value to replace the key with
  * @returns True if the value was replaced, false otherwise
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const replaceObjectValue = (obj: any, key: string, value: any) => {
   const parsedValue = parseValue(value)
   return replaceValue(obj, key, parsedValue)
@@ -96,6 +98,7 @@ const replaceObjectValue = (obj: any, key: string, value: any) => {
  * @param replacements Object containing the keys to replace and their new values
  * @returns Array of keys that were replaced
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transformObject = (obj: any, replacements: Record<string, string>) => {
   const replacedKeys: string[] = []
   for (const key in replacements) {

@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { parseReplacements, transformJsonFile, transformObject } from '../src/tokenReplacement'
-import { after, describe } from 'node:test'
+import { describe } from 'node:test'
 import fs from 'fs'
 
 describe('Replacement parsing', () => {
