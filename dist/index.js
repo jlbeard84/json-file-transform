@@ -27436,7 +27436,10 @@ const parseValue = (value) => {
     return true
   } else if (value === 'false') {
     return false
-  } else if (!isNaN(Number(value)) && (parseInt(value) == value || parseFloat(value) == value)) {
+  } else if (
+    !isNaN(Number(value))
+    && (parseInt(value).toString() === value || parseFloat(value).toString() === value)
+  ) {
     return Number(value)
   } else {
     return value
