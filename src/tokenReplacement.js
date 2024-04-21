@@ -71,7 +71,7 @@ const parseValue = (value) => {
     return true
   } else if (value === 'false') {
     return false
-  } else if (!isNaN(Number(value))) {
+  } else if (!isNaN(Number(value)) && (parseInt(value) == value || parseFloat(value) == value)) {
     return Number(value)
   } else {
     return value

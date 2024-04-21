@@ -49,6 +49,14 @@ describe('Replacement parsing', () => {
       key3: 'value3',
     })
   })
+
+  test('Long numbers are parsed as strings', () => {
+    const replacements = 'key1=1234567890123456789012345678901234567890'
+    const parsedReplacements = parseReplacements(replacements)
+    expect(parsedReplacements).toEqual({
+      key1: '1234567890123456789012345678901234567890',
+    })
+  })
 })
 
 describe('JSON object transformation', () => {
