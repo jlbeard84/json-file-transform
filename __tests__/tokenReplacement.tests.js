@@ -341,12 +341,80 @@ describe('JSON object transformation', () => {
       key2: '3',
     })
   })
+
+  test('Replaces complete arrays with new arrays', () => {
+    const obj = {
+      key1: 'value1',
+      key2: ['value2', 'value3'],
+    }
+    const replacements = {
+      key1: 'new value 1',
+      key2: 'new value 2, new value 3',
+    }
+    const replacedKeys = transformObject(obj, replacements)
+    expect(replacedKeys).toEqual(['key1', 'key2'])
+    expect(obj).toEqual({
+      key1: 'new value 1',
+      key2: ['new value 2', 'new value 3'],
+    })
+  })
+
+  test('Replaces arrays with empty arrays if replacement is empty', () => {
+    const obj = {
+      key1: 'value1',
+      key2: ['value2', 'value3'],
+    }
+    const replacements = {
+      key1: 'new value 1',
+      key2: '',
+    }
+    const replacedKeys = transformObject(obj, replacements)
+    expect(replacedKeys).toEqual(['key1', 'key2'])
+    expect(obj).toEqual({
+      key1: 'new value 1',
+      key2: [],
+    })
+  })
+
+  test('Replaces arrays with single values', () => {
+    const obj = {
+      key1: 'value1',
+      key2: ['value2', 'value3'],
+    }
+    const replacements = {
+      key1: 'new value 1',
+      key2: 'new value 2',
+    }
+    const replacedKeys = transformObject(obj, replacements)
+    expect(replacedKeys).toEqual(['key1', 'key2'])
+    expect(obj).toEqual({
+      key1: 'new value 1',
+      key2: ['new value 2'],
+    })
+  })
+
+  test('Preserves array-like strings if original value was a string', () => {
+    const obj = {
+      key1: 'value1',
+      key2: 'value2',
+    }
+    const replacements = {
+      key1: 'new value 1',
+      key2: 'new value 2,new value 3',
+    }
+    const replacedKeys = transformObject(obj, replacements)
+    expect(replacedKeys).toEqual(['key1', 'key2'])
+    expect(obj).toEqual({
+      key1: 'new value 1',
+      key2: 'new value 2,new value 3',
+    })
+  })
 })
 
 describe('File transformations', () => {
   test('Correctly transforms JSON file', () => {
-    const input = './tests/test.json'
-    const output = './tests/test_output.json'
+    const input = './__tests__/test.json'
+    const output = './__tests__/test_output.json'
     const replacements = {
       key1: 'new value 1',
       'array.0': 'new array value 1',

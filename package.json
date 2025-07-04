@@ -4,8 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --testMatch='**/tests/**/*.[jt]s?(x)'",
+    "test": "jest --testMatch='**/__tests__/**/*.[jt]s?(x)'",
     "build": "ncc build src/index.js --license licenses.txt"
+  },
+  "jest": {
+    "moduleFileExtensions": ["js"]
   },
   "keywords": [],
   "author": "",
