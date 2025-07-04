@@ -27380,6 +27380,20 @@ const splitKey = (key) => key.match(/(\\.|[^.])+/g) || []
 const getNextStepKey = (key) => splitKey(key).slice(1).join('.')
 
 /**
+ * Converts a comma, semicolon or newline separated string into an array of items.
+ * Items can be escaped with a backslash, e.g. `\,` or `\;` or `\\n`.
+ * @param {string} str String to convert to an array
+ * @returns 
+ */
+const stringToArray = (str) => {
+  if (!str) {
+    return []
+  }
+  const items = str.match(/(\\[,;\n]|[^,;\n])+/g) || [] 
+  return items.map((item) => item.trim())
+}
+
+/**
  * Replaces a value in an object based on a string key
  * @param obj Object to replace the value in
  * @param key Key to replace the value of
@@ -27410,6 +27424,10 @@ const replaceValue = (obj, key, value) => {
         return replaceValue(obj[index], nextKey, value)
       }
     }
+  } else if (Array.isArray(obj[currentKey]) && isLastKey) {
+      // Replace the entire array content if the key doesn't refer to an index
+      obj[currentKey] = stringToArray(value)
+      return true
   } else if (typeof obj[currentKey] === 'object' && obj[currentKey] !== null && !isLastKey) {
     // If the current key points to an object, recursively search for the next key
     return replaceValue(obj[currentKey], nextKey, value)
