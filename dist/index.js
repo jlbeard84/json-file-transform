@@ -27521,7 +27521,12 @@ const parseReplacements = (replacements) => {
  * @returns Array of keys that were replaced successfully
  */
 const transformJsonFile = (inputFilePath, outputFilePath, replacements) => {
-  const fileContent = fs.readFileSync(inputFilePath, 'utf8')
+  let fileContent = fs.readFileSync(inputFilePath, 'utf8')
+
+  if (fileContent.charCodeAt(0) === 0xFEFF) {
+    fileContent = fileContent.slice(1)
+  }
+
   const obj = JSON.parse(fileContent)
   const replacedKeys = transformObject(obj, replacements)
   fs.writeFileSync(outputFilePath, JSON.stringify(obj, null, 2))

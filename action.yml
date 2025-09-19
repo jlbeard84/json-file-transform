@@ -1,5 +1,5 @@
-name: 'JSON File Transform'
-description: 'Modify fields in a JSON file'
+name: 'JSON File Transform With Graceful Encoding Handling'
+description: 'Modify fields in a JSON file after ensuring that the encoding is correct'
 branding:
   icon: 'edit'
   color: 'green'
